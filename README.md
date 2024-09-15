@@ -1,6 +1,6 @@
 # WorthyHackathon
 
-## Welcome to the **Chore Competition!**
+## Welcome to the 🔥 **Chore Competition!** 🔥
 
 Compete with your family members or roommates to see who can complete the most chores!
 
@@ -70,4 +70,4 @@ Run the front-end:
 npm run dev
 ```
 
-**Voila!** Now everything should be up and running correctly, and you can create your first household!
+✨ **Voila!** ✨ Now everything should be up and running correctly, and you can create your first household!
