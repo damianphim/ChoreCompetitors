@@ -5,16 +5,19 @@ import Link from 'next/link';
 import { List, Card, Typography, Box } from '@mui/material';
 import styles from './styles/page.module.css';
 
-export default function Home() {
+function Home() {
   const [households, setHouseholds] = useState([]);
 
   // Function to add a new household
   const addHousehold = () => {
-    const newHousehold = {
-      id: households.length + 1,
-      name: `Household ${households.length + 1}`,
-    };
-    setHouseholds([...households, newHousehold]);
+    if(households.length < 4)
+    {
+      const newHousehold = {
+        id: households.length + 1,
+        name: `Household ${households.length + 1}`,
+      };
+      setHouseholds([...households, newHousehold]);
+    }
   };
 
   return (
@@ -53,18 +56,21 @@ export default function Home() {
             boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.1)',
             borderRadius: '20px',
             color: '#888',
-            cursor: 'pointer',
+            cursor: households.length < 4 ? 'pointer' : 'not-allowed',
             textAlign: 'center',
             transition: 'transform 0.2s ease',
-            '&:hover': { transform: 'scale(1.05)', backgroundColor: '#f5f5f5' },
+            '&:hover': households.length < 4 ? { transform: 'scale(1.05)', backgroundColor: '#f5f5f5' } : {},
           }}
-          onClick={addHousehold}
+          onClick={households.length < 4 ? addHousehold : null}  // Disable click if limit is reached
         >
           <Box className={styles.addHouseholdBox}>
-            + Add Household
+            {households.length < 4 ? '+ Add Household' : 'Limit Reached'}
           </Box>
         </Card>
+
       </List>
     </div>
   );
 }
+
+export default Home;
