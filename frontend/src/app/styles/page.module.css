@@ -1,0 +1,98 @@
+.page {
+  display: grid;
+  grid-template-rows: 20px 1fr 20px;
+  align-items: center;
+  justify-items: center;
+  min-height: 100vh;
+  padding: 80px;
+  gap: 64px;
+  font-family: 'Roboto', sans-serif;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.ctas {
+  display: flex;
+  gap: 16px;
+}
+
+.ctas a {
+  border-radius: 128px;
+  height: 48px;
+  padding: 0 20px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.footer {
+  display: flex;
+  gap: 24px;
+}
+
+@media (max-width: 600px) {
+  .page {
+    padding: 32px;
+  }
+
+  .main {
+    align-items: center;
+  }
+
+  .ctas {
+    flex-direction: column;
+  }
+}
+
+.houseHoldBox {
+  font-size: 1.4rem;
+  font-weight: bold;
+  text-align: center;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+.addHouseholdBox {
+  font-size: 1.4rem;
+  text-align: center;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: #888;
+  font-weight: bold;
+}
+
+.addHouseholdBox:hover {
+  color: #ff5722;
+}
+
+.pageContainer {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+
+.gradientText {
+  font-size: 2rem; /* Adjust as needed */
+  font-weight: bold;
+  background: linear-gradient(135deg, #d69f8e, #ff5722); /* Define your gradient */
+  background-clip: text;
+  -webkit-background-clip: text; /* For WebKit browsers */
+  color: transparent;
+  display: inline-block; /* Ensures the gradient applies correctly to the text */
+}
