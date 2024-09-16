@@ -22,7 +22,7 @@ function Home() {
 
   return (
     <div className={styles.pageContainer}>
-      <Typography  className={styles.gradientText} variant="h4">Chore <br /> &emsp;Competitor</Typography>
+      <Typography  className={styles.gradientText} variant="h4">Chore <br /> &emsp;Competitors</Typography>
       <List>
         {households.map((household) => (
           <Link href={`/household/${household.id}`} passHref key={household.id}>
