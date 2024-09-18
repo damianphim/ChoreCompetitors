@@ -1,6 +1,4 @@
-# WorthyHackathon
-
-## Welcome to the 🔥 **Chore Competition!** 🔥
+## Welcome to 🔥 **Chore Competitors!** 🔥
 
 Compete with your family members or roommates to see who can complete the most chores!
 
@@ -9,13 +7,13 @@ Compete with your family members or roommates to see who can complete the most c
 Clone the github repository:
 
 ```
-git clone https://github.com/damianphim/WorthyHackathon
+git clone https://github.com/damianphim/ChoreCompetitors
 ```
 
 Go into the directory:
 
 ```
-cd WorthyHackathon
+cd ChoreCompetitors
 ```
 
 ### Running the Back-End
