@@ -1,0 +1,46 @@
+.tasksContainer {
+    display: flex;
+    justify-content: space-between;
+    gap: 0; /* Remove gap between categories */
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .tasksList {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .taskCategory {
+    flex: 1; /* Make each category take equal width */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 20px;
+    position: relative;
+  }
+  
+  .taskCard {
+    width: 100%;
+    margin-bottom: 10px; /* Add space between cards */
+  }
+  
+  .dividerContainer {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+  }
+  
+  .divider {
+    width: 1px;
+    background-color: rgba(255, 255, 255, 0.3);
+    height: 100%;
+    align-self: stretch; /* Ensure the divider spans the full height */
+  }
+  
+  

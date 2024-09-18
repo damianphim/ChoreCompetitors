@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
@@ -59,13 +59,18 @@ function TabsTwitter({ value, handleChange }) {
 // CustomTabPanel for content of each tab
 function CustomTabPanel({ children, value, index }) {
   return (
-    <div role="tabpanel" hidden={value !== index} id={`tabpanel-${index}`}>
+    <Box
+      role="tabpanel"
+      hidden={value !== index}
+      id={`tabpanel-${index}`}
+      sx={{ width: '100%', height: '100%' }} // Ensure it fills the container
+    >
       {value === index && (
         <Box sx={{ p: 3 }}>
           {children}
         </Box>
       )}
-    </div>
+    </Box>
   );
 }
 
@@ -87,28 +92,30 @@ function HouseholdPage() {
       <Box
         sx={{
           width: '90vw',
-          height: '80vh',
+          height: '75vh',
           backgroundColor: 'rgba(245, 245, 245, 0.3)',
           boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
           borderRadius: '20px',
           borderBottom: 1,
           borderColor: 'divider',
+          overflow: 'hidden', // Make sure content stays inside
+          padding: '20px', // Add padding inside the box for spacing
         }}
       >
         {/* Twitter-style Tabs */}
         <TabsTwitter value={tabIndex} handleChange={handleChange} />
-      </Box>
 
-      {/* Tab Panels for each tab */}
-      <CustomTabPanel value={tabIndex} index={0}>
-        <Tasks householdId={id} />
-      </CustomTabPanel>
-      <CustomTabPanel value={tabIndex} index={1}>
-        <Leaderboard householdId={id} />
-      </CustomTabPanel>
-      <CustomTabPanel value={tabIndex} index={2}>
-        <Members householdId={id} />
-      </CustomTabPanel>
+        {/* Tab Panels for each tab */}
+        <CustomTabPanel value={tabIndex} index={0}>
+          <Tasks householdId={id} />
+        </CustomTabPanel>
+        <CustomTabPanel value={tabIndex} index={1}>
+          <Leaderboard householdId={id} />
+        </CustomTabPanel>
+        <CustomTabPanel value={tabIndex} index={2}>
+          <Members householdId={id} />
+        </CustomTabPanel>
+      </Box>
     </>
   );
 }
