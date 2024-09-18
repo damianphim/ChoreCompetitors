@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';  // Or use fetch if preferred
 import Link from 'next/link';
 import { List, Card, Typography, Box } from '@mui/material';
 import styles from './styles/page.module.css';
@@ -8,16 +9,25 @@ import styles from './styles/page.module.css';
 function Home() {
   const [households, setHouseholds] = useState([]);
 
+  useEffect(() => {
+    // Fetch households from Flask API
+    axios.get('http://localhost:5000/api/households')
+      .then(response => {
+        setHouseholds(response.data);
+      })
+      .catch(error => console.error(error));
+  }, []);
+
   // Function to add a new household
   const addHousehold = () => {
-    if(households.length < 4)
-    {
-      const newHousehold = {
-        id: households.length + 1,
-        name: `Household ${households.length + 1}`,
-      };
-      setHouseholds([...households, newHousehold]);
-    }
+    const newHousehold = {
+      name: `Household ${households.length + 1}`
+    };
+    axios.post('http://localhost:5000/api/households', newHousehold)
+      .then(response => {
+        setHouseholds([...households, response.data]);
+      })
+      .catch(error => console.error(error));
   };
 
   return (
@@ -67,7 +77,6 @@ function Home() {
             {households.length < 4 ? '+ Add Household' : 'Limit Reached'}
           </Box>
         </Card>
-
       </List>
     </div>
   );
