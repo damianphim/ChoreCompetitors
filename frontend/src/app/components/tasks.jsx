@@ -8,140 +8,148 @@ import StarIcon from '@mui/icons-material/Star';
 import styles from '../styles/tasks.module.css';
 
 export default function Tasks({ householdId }) {
-    const [dailyTasks, setDailyTasks] = useState([]);
-    const [weeklyTasks, setWeeklyTasks] = useState([]);
-    const [monthlyTasks, setMonthlyTasks] = useState([]);
-    const [editTask, setEditTask] = useState(null); // Track the task being edited
-    const [editTaskType, setEditTaskType] = useState(''); // Track which type of task is being edited
-    const [editTaskName, setEditTaskName] = useState('');
-    const [editTaskStars, setEditTaskStars] = useState(1);
+  const [dailyTasks, setDailyTasks] = useState([]);
+  const [weeklyTasks, setWeeklyTasks] = useState([]);
+  const [monthlyTasks, setMonthlyTasks] = useState([]);
+  const [editTask, setEditTask] = useState(null); // Track the task being edited
+  const [editTaskType, setEditTaskType] = useState(''); // Track which type of task is being edited
+  const [editTaskName, setEditTaskName] = useState('');
+  const [editTaskStars, setEditTaskStars] = useState(1);
   
-    // Helper function to handle countdown timer
-    const calculateRemainingTime = (task) => {
-        if (!task.cooldownEnd) return '';  // Return empty if cooldownEnd is not set
-        
-        const cooldownEnd = new Date(task.cooldownEnd).getTime();  // Convert to a valid timestamp
-        const currentTime = new Date().getTime();
-        const timeLeft = cooldownEnd - currentTime;
-      
-        if (timeLeft <= 0) return '00:00:00';  // Task is out of cooldown, return zero
-      
-        const hours = Math.floor(timeLeft / (1000 * 60 * 60));
-        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-        
-        return `${hours}:${minutes < 10 ? `0${minutes}` : minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
-      };      
+  // Helper function to handle countdown timer
+  const calculateRemainingTime = (task) => {
+    if (!task.cooldownEnd) return '';  // Return empty if cooldownEnd is not set
+    
+    const cooldownEnd = new Date(task.cooldownEnd).getTime();  // Convert to a valid timestamp
+    const currentTime = new Date().getTime();
+    const timeLeft = cooldownEnd - currentTime;
+    
+    if (timeLeft <= 0) return '00:00:00';  // Task is out of cooldown, return zero
+    
+    const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+    
+    return `${hours}:${minutes < 10 ? `0${minutes}` : minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
+  };  
   
-    // Update tasks countdown every second
-    useEffect(() => {
-        axios.get('http://localhost:5000/api/tasks')
-            .then(response => {
-                const { dailyTasks, weeklyTasks, monthlyTasks } = response.data;
-                setDailyTasks(dailyTasks);
-                setWeeklyTasks(weeklyTasks);
-                setMonthlyTasks(monthlyTasks);
-            })
-            .catch(error => console.error(error));
-
-        const interval = setInterval(() => {
-            setDailyTasks((tasks) => [...tasks]);
-            setWeeklyTasks((tasks) => [...tasks]);
-            setMonthlyTasks((tasks) => [...tasks]);
-        }, 1000);
-        return () => clearInterval(interval);
-    }, []);
-  
-    const addTask = (taskType) => {
-        const taskSetters = {
-          daily: [dailyTasks, setDailyTasks],
-          weekly: [weeklyTasks, setWeeklyTasks],
-          monthly: [monthlyTasks, setMonthlyTasks],
-        };
-        const [tasks, setTasks] = taskSetters[taskType];
-    
-        if (tasks.length < 5) {
-          const newTask = {
-            household_id: householdId,  // Add the household_id
-            name: `${taskType.charAt(0).toUpperCase() + taskType.slice(1)} Task ${tasks.length + 1}`,
-            stars: 1,
-            task_type: taskType,
-            completed: false,
-            cooldownEnd: null,
-          };
-          
-          axios.post('http://localhost:5000/api/tasks', newTask)
-            .then(response => setTasks([...tasks, response.data]))
-            .catch(error => console.error(error));
-        }
-    };
-    
-    const completeTask = (taskType, taskId) => {
-        const taskSetters = {
-          daily: [dailyTasks, setDailyTasks],
-          weekly: [weeklyTasks, setWeeklyTasks],
-          monthly: [monthlyTasks, setMonthlyTasks],
-        };
-        const [tasks, setTasks] = taskSetters[taskType];
-    
-        const cooldownTime = taskType === 'daily' ? 24 * 60 * 60 * 1000 : 
-                             taskType === 'weekly' ? 7 * 24 * 60 * 60 * 1000 : 
-                             30 * 24 * 60 * 60 * 1000;
-    
-        const updatedTasks = tasks.map(task =>
-          task.id === taskId ? { ...task, completed: true, cooldownEnd: new Date().getTime() + cooldownTime } : task
-        );
-        
-        const updatedTask = updatedTasks.find(task => task.id === taskId);
-        axios.put(`http://localhost:5000/api/tasks/${taskId}/complete`, {
-            completed: true,
-            cooldown_end: updatedTask.cooldownEnd
+  useEffect(() => {
+    if (householdId) {
+      axios.get(`http://localhost:5000/api/households/${householdId}/tasks`)
+        .then(response => {
+          const { dailyTasks, weeklyTasks, monthlyTasks } = response.data;
+          setDailyTasks(dailyTasks.map(task => ({
+            ...task,
+            cooldownEnd: task.cooldown_end ? new Date(task.cooldown_end) : null
+          })));
+          setWeeklyTasks(weeklyTasks.map(task => ({
+            ...task,
+            cooldownEnd: task.cooldown_end ? new Date(task.cooldown_end) : null
+          })));
+          setMonthlyTasks(monthlyTasks.map(task => ({
+            ...task,
+            cooldownEnd: task.cooldown_end ? new Date(task.cooldown_end) : null
+          })));
         })
-        .then(() => setTasks(updatedTasks))
         .catch(error => console.error(error));
+    }
+  
+    // Update timers every second
+    const interval = setInterval(() => {
+      setDailyTasks((tasks) => [...tasks]);
+      setWeeklyTasks((tasks) => [...tasks]);
+      setMonthlyTasks((tasks) => [...tasks]);
+    }, 1000);
+  
+    return () => clearInterval(interval);  // Clean up interval on unmount
+  }, [householdId]);
+  
+  const addTask = (taskType) => {
+    const taskSetters = {
+      daily: [dailyTasks, setDailyTasks],
+      weekly: [weeklyTasks, setWeeklyTasks],
+      monthly: [monthlyTasks, setMonthlyTasks],
     };
+    const [tasks, setTasks] = taskSetters[taskType];
+
+    if (tasks.length < 5) {
+      const newTask = {
+        household_id: householdId,  // Add the household_id
+        name: `${taskType.charAt(0).toUpperCase() + taskType.slice(1)} Task ${tasks.length + 1}`,
+        stars: 1,
+        task_type: taskType,
+        completed: false,
+        cooldownEnd: null,
+      };
+
+      axios.post(`http://localhost:5000/api/households/${householdId}/tasks`, newTask)
+        .then(response => setTasks([...tasks, response.data]))
+        .catch(error => console.error(error));
+    }
+  };
+
     
-    const openEditTask = (task, taskType) => {
-      setEditTask(task);
-      setEditTaskType(taskType); // Preserve the type of task being edited
-      setEditTaskName(task.name);
-      setEditTaskStars(task.stars);
+  const completeTask = (taskType, taskId) => {
+    const taskSetters = {
+      daily: [dailyTasks, setDailyTasks],
+      weekly: [weeklyTasks, setWeeklyTasks],
+      monthly: [monthlyTasks, setMonthlyTasks],
     };
-  
-    const saveTaskChanges = () => {
-        const taskSetters = {
-          daily: [dailyTasks, setDailyTasks],
-          weekly: [weeklyTasks, setWeeklyTasks],
-          monthly: [monthlyTasks, setMonthlyTasks],
-        };
-        const [tasks, setTasks] = taskSetters[editTaskType]; // Use the correct task type
-      
-        const updatedTasks = tasks.map(task =>
-          task.id === editTask.id ? { ...task, name: editTaskName, stars: editTaskStars } : task
-        );
-      
-        const updatedTask = updatedTasks.find(task => task.id === editTask.id);
-      
-        // Send the updated task to the backend
-        axios.put(`http://localhost:5000/api/tasks/${editTask.id}`, {
-          name: editTaskName,
-          stars: editTaskStars
-        })
-        .then(() => {
-          setTasks(updatedTasks);  // Only update state if the backend update succeeds
-          setEditTask(null);  // Close the edit dialog
-        })
-        .catch(error => console.error('Failed to update task', error));
-      };      
-  
-    // Render stars based on task's star count
-    const renderStars = (stars) => (
-      <Box display="flex" alignItems="center">
-        {[...Array(5)].map((_, index) => (
-          <StarIcon key={index} sx={{ color: index < stars ? 'yellow' : 'gray' }} />
-        ))}
-      </Box>
+    const [tasks, setTasks] = taskSetters[taskType];
+
+    const cooldownTime = taskType === 'daily' ? 24 * 60 * 60 * 1000 : 
+                        taskType === 'weekly' ? 7 * 24 * 60 * 60 * 1000 : 
+                        30 * 24 * 60 * 60 * 1000;
+
+    const updatedTasks = tasks.map(task =>
+      task.id === taskId ? { ...task, completed: true, cooldownEnd: new Date().getTime() + cooldownTime } : task
     );
+    
+    const updatedTask = updatedTasks.find(task => task.id === taskId);
+    axios.put(`http://localhost:5000/api/households/${householdId}/tasks/${taskId}/complete`, {
+        completed: true,
+        cooldown_end: updatedTask.cooldownEnd
+    })
+    .then(() => setTasks(updatedTasks))
+    .catch(error => console.error(error));
+  };
+
+  
+  const saveTaskChanges = () => {
+    const taskSetters = {
+      daily: [dailyTasks, setDailyTasks],
+      weekly: [weeklyTasks, setWeeklyTasks],
+      monthly: [monthlyTasks, setMonthlyTasks],
+    };
+    const [tasks, setTasks] = taskSetters[editTaskType]; // Use the correct task type
+    
+    const updatedTasks = tasks.map(task =>
+      task.id === editTask.id ? { ...task, name: editTaskName, stars: editTaskStars } : task
+    );
+    
+    const updatedTask = updatedTasks.find(task => task.id === editTask.id);
+    
+    // Send the updated task to the backend
+    axios.put(`http://localhost:5000/api/households/${householdId}/tasks/${editTask.id}`, {
+      name: editTaskName,
+      stars: editTaskStars
+    })
+    .then(() => {
+      setTasks(updatedTasks);  // Only update state if the backend update succeeds
+      setEditTask(null);  // Close the edit dialog
+    })
+    .catch(error => console.error('Failed to update task', error));
+  };
+      
+  
+  // Render stars based on task's star count
+  const renderStars = (stars) => (
+    <Box display="flex" alignItems="center">
+      {[...Array(5)].map((_, index) => (
+        <StarIcon key={index} sx={{ color: index < stars ? 'yellow' : 'gray' }} />
+      ))}
+    </Box>
+  );
   
     const renderTaskList = (tasks, title, taskType) => (
       <div className={styles.taskCategory}>
