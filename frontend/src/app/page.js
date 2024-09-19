@@ -3,7 +3,10 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';  // Or use fetch if preferred
 import Link from 'next/link';
-import { List, Card, Typography, Box } from '@mui/material';
+import List from '@mui/material/List';
+import Card from '@mui/material/Card';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 import styles from './styles/page.module.css';
 
 function Home() {

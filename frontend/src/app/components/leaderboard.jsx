@@ -1,5 +1,7 @@
 import React from 'react';
-import { Box, Typography, Avatar } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 import StarIcon from '@mui/icons-material/Star';
 import styles from '../styles/leaderboard.module.css'; // Updated styles for leaderboard
 

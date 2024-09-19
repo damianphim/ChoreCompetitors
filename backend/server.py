@@ -35,6 +35,7 @@ def init_db():
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             household_id INTEGER,
                             name TEXT NOT NULL,
+                            stars INTEGER DEFAULT 0,
                             FOREIGN KEY (household_id) REFERENCES households(id)
                         )''')
 
@@ -147,18 +148,31 @@ def get_members(household_id):
     with sqlite3.connect(DATABASE) as conn:
         cursor = conn.cursor()
         cursor.execute('SELECT * FROM members WHERE household_id = ?', (household_id,))
-        members = [{'id': row[0], 'household_id': row[1], 'name': row[2]} for row in cursor.fetchall()]
+        members = [{'id': row[0], 'household_id': row[1], 'name': row[2], 'stars': row[3]} for row in cursor.fetchall()]  # Include stars
     return jsonify(members)
 
 @app.route('/api/households/<int:household_id>/members', methods=['POST'])
 def add_member(household_id):
     data = request.get_json()
     name = data['name']
+    stars = data.get('stars', 0)  # Set stars to 0 if not provided
     with sqlite3.connect(DATABASE) as conn:
         cursor = conn.cursor()
-        cursor.execute('INSERT INTO members (household_id, name) VALUES (?, ?)', (household_id, name))
+        cursor.execute('INSERT INTO members (household_id, name, stars) VALUES (?, ?, ?)', (household_id, name, stars))
         conn.commit()
         member_id = cursor.lastrowid
+    return jsonify({'id': member_id, 'household_id': household_id, 'name': name, 'stars': stars})
+
+@app.route('/api/households/<int:household_id>/members/<int:member_id>', methods=['PUT'])
+def update_member(household_id, member_id):
+    data = request.get_json()
+    name = data['name']
+
+    with sqlite3.connect(DATABASE) as conn:
+        cursor = conn.cursor()
+        cursor.execute('UPDATE members SET name = ? WHERE id = ? AND household_id = ?', (name, member_id, household_id))
+        conn.commit()
+    
     return jsonify({'id': member_id, 'household_id': household_id, 'name': name})
 
 if __name__ == '__main__':

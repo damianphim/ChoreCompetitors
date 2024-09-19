@@ -2,7 +2,6 @@
 
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
-import { Typography, Box } from '@mui/material';
 import Tasks from '../../components/tasks';
 import Leaderboard from '../../components/leaderboard';
 import Members from '../../components/members';
@@ -11,6 +10,8 @@ import React from "react";
 import { styled } from "@mui/material/styles";
 import Tab, { tabClasses } from "@mui/material/Tab";
 import Tabs, { tabsClasses } from "@mui/material/Tabs";
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 
 // Styled Tab for Twitter-style
 const TabItem = styled(Tab)(({ theme }) => ({
