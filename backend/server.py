@@ -167,13 +167,15 @@ def add_member(household_id):
 def update_member(household_id, member_id):
     data = request.get_json()
     name = data['name']
+    stars = data['stars']
 
     with sqlite3.connect(DATABASE) as conn:
         cursor = conn.cursor()
-        cursor.execute('UPDATE members SET name = ? WHERE id = ? AND household_id = ?', (name, member_id, household_id))
+        cursor.execute('UPDATE members SET name = ?, stars = ? WHERE id = ? AND household_id = ?', 
+                       (name, stars, member_id, household_id))
         conn.commit()
     
-    return jsonify({'id': member_id, 'household_id': household_id, 'name': name})
+    return jsonify({'id': member_id, 'household_id': household_id, 'name': name, 'stars': stars})
 
 if __name__ == '__main__':
     app.run(debug=True)
