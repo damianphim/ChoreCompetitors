@@ -46,7 +46,13 @@ export default function Members({ householdId }) {
 
   // Function to save the changes to the backend
   const saveMemberChanges = (memberId) => {
-    axios.put(`http://localhost:5000/api/households/${householdId}/members/${memberId}`, { name: editMemberName })
+    const memberToUpdate = members.find((member) => member.id === memberId);
+  
+    // Ensure both name and stars are sent to the backend
+    axios.put(`http://localhost:5000/api/households/${householdId}/members/${memberId}`, { 
+        name: editMemberName,
+        stars: memberToUpdate.stars  // Include the existing stars value
+      })
       .then(() => {
         setMembers(members.map(member =>
           member.id === memberId ? { ...member, name: editMemberName } : member
@@ -55,6 +61,7 @@ export default function Members({ householdId }) {
       })
       .catch(error => console.error('Error updating member name:', error));
   };
+  
 
   return (
     <div className={styles.membersContainer}>
